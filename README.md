@@ -39,12 +39,14 @@ As mentioned earlier, the given JSON object is converted into Base64URL encoding
 The second part of JWT is called the payload. The payload of a JWT contains the claims, which represent information about the entity (typically the user) for whom the JWT is issued, along with some additional data. There are two types of claims: registered claims and custom claims.
 
 Registered claims are claims defined in the JWT specification and are used to convey common information about the JWT. Examples of registered claims include:
-  <ul>
-    <li>iss (Issuer) – JWT issuer identifier;</li>
-    <li>sub (Subject) – JWT subject identifier;</li>
-    <li>exp (Expiration) – JWT expiration time;</li>
-    <li>aud (Audience) – recipients for whom JWT is intended.</li>
-  </ul>
+</p>
+<ul>
+  <li>iss (Issuer) – JWT issuer identifier;</li>
+  <li>sub (Subject) – JWT subject identifier;</li>
+  <li>exp (Expiration) – JWT expiration time;</li>
+  <li>aud (Audience) – recipients for whom JWT is intended.</li>
+</ul>
+<p align="justify">
 Custom claims are not universally accepted by standards but are defined according to the specific needs of an application. These claims can be either public or private. Public custom claims typically use widely accepted names (and standards for them), while private custom claims use names specific to the application in which they are used. Therefore, the term "privacy" in the context of custom claims does not imply visibility only to the JWT holder but rather the adherence of those claims to standard conventions. An example of a public custom claim would be "name" (representing the user's name for whom the JWT is issued), and private custom claims could be "user_id" or any other application-specific information.
 
 In the code snippet below, an example JSON object representing the payload part of a JWT is visible:
