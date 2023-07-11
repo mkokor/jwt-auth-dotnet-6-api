@@ -14,12 +14,14 @@ namespace JwtAuth.BLL
     {
         public AutoMapperProfile()
         {
+            #region User
             CreateMap<UserRequestDto, User>()
                 .ForMember(destinationObject => destinationObject.UserId, options => options.MapFrom(sourceObject => sourceObject.Id));
 
 
             CreateMap<User, UserResponseDto>()
                 .ForMember(destinationObject => destinationObject.Id, options => options.MapFrom(sourceObject => sourceObject.UserId));
+            #endregion
         }
     }
 }

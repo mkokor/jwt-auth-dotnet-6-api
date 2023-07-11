@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JwtAuth.BLL.DTOs.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace JwtAuth.BLL.Interfaces
 {
     public interface IUsersService
     {
-        public Task<List<UserResponseDto>> GetAllUsers();
+        Task<List<UserResponseDto>> GetAllUsers();
     }
 }
