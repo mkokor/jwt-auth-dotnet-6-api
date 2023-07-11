@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.DAL.Entities
+namespace JwtAuth.BLL.DTOs.Requests
 {
-    public class User
+    public class UserRequestDto
     {
-        public int UserId { get; set; }
+        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
     }

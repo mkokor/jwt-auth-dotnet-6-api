@@ -18,7 +18,7 @@ namespace JwtAuth.DAL.Repositories
             _appDbContext = appDbContext;
         }
 
-        public async Task<List<User>> GetAll()
+        public async Task<List<User>> GetAllUsers()
         {
             return await _appDbContext.Users.ToListAsync();
         }

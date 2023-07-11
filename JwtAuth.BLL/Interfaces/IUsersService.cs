@@ -8,5 +8,6 @@ namespace JwtAuth.BLL.Interfaces
 {
     public interface IUsersService
     {
+        public Task<List<UserResponseDto>> GetAllUsers();
     }
 }

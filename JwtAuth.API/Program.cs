@@ -1,3 +1,5 @@
+using JwtAuth.BLL.Interfaces;
+using JwtAuth.BLL.Services;
 using JwtAuth.DAL;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +10,9 @@ builder.Services.AddEntityFrameworkMySql().AddDbContext<AppDbContext>(options =>
 });
 
 // Add services to the container.
+builder.Services.AddScoped<IUsersService, UsersService>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
