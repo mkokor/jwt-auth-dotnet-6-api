@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JwtAuth.BLL.Interfaces
 {
-    internal interface IUsersService
+    public interface IUsersService
     {
     }
 }
