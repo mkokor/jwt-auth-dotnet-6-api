@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JwtAuth.DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace JwtAuth.DAL.Interfaces
 {
     public interface IUserRepository
     {
+        Task<List<User>> GetAll();
     }
 }
