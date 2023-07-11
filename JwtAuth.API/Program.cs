@@ -1,4 +1,11 @@
+using JwtAuth.DAL;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEntityFrameworkMySql().AddDbContext<AppDbContext>(options => {
+    options.UseMySql(builder.Configuration.GetConnectionString("Default"), new MySqlServerVersion(new Version(8, 0, 32)));
+});
 
 // Add services to the container.
 
