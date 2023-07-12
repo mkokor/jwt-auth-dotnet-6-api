@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -79,9 +81,26 @@ namespace JwtAuth.BLL.Utilities
             return new SigningCredentials(GetSecretKey(), SecurityAlgorithms.HmacSha512Signature);
         }
 
+        private List<Claim> GetClaims(User user)
+        {
+            return new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+        }
+
+        private JwtSecurityToken ConfigureJwt(User user)
+        {
+            return new JwtSecurityToken(
+                claims: GetClaims(user),
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: GetDigitalSignature());
+        }
+
+
         public string GenerateJwt(User user)
         {
-            return "JSON.Web.Token";
+            return new JwtSecurityTokenHandler().WriteToken(ConfigureJwt(user));
         }
         #endregion
     }
