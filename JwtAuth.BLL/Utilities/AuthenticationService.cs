@@ -73,9 +73,14 @@ namespace JwtAuth.BLL.Utilities
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JsonWebToken:Secret").Value));
         }
 
+        private SigningCredentials GetDigitalSignature()
+        {
+            // Algorithm is HMAC (symmetric), so the key is secret (not private).
+            return new SigningCredentials(GetSecretKey(), SecurityAlgorithms.HmacSha512Signature);
+        }
+
         public string GenerateJwt(User user)
         {
-            var secretKey = GetSecretKey(); // Algorithm is HMAC (symmetric), so the key is secret (not private).
             return "JSON.Web.Token";
         }
         #endregion
