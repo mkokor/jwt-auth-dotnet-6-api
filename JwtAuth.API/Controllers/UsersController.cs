@@ -18,7 +18,7 @@ namespace JwtAuth.API.Controllers
             _usersService = usersService;
         }
 
-        [HttpGet, Authorize]
+        [HttpGet, Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<UserResponseDto>>> GetAllUsers()
         {
             try
@@ -32,7 +32,7 @@ namespace JwtAuth.API.Controllers
             }
         }
 
-        [HttpPost("register")]
+        [HttpPost("registration")]
         public async Task<ActionResult> RegisterUser(UserRegistrationRequestDto userRegistrationRequestDto)
         {
             try

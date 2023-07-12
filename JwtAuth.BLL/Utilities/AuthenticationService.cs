@@ -49,12 +49,8 @@ namespace JwtAuth.BLL.Utilities
         public async Task CheckUsernameAvailability(string username)
         {
             var allUsers = await _unitOfWork.UserRepository.GetAllUsers();
-            try
-            {
-                allUsers.Find(user => user.Username.Equals(username));
+            if (allUsers.FirstOrDefault(user => user.Username.Equals(username)) != null)
                 throw new Exception("Provided username is not available!");
-            }
-            catch (ArgumentNullException) { }
         }
 
         // Function below checks if provided plaintext password matches with provided hashed password (with specific salt)!
@@ -85,7 +81,8 @@ namespace JwtAuth.BLL.Utilities
         {
             return new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
             };
         }
 

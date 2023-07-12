@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JwtAuth.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230712083209_NewVersion")]
+    [Migration("20230712150238_NewVersion")]
     partial class NewVersion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,10 @@ namespace JwtAuth.DAL.Migrations
                     b.Property<byte[]>("PsswordHash")
                         .IsRequired()
                         .HasColumnType("longblob");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Username")
                         .IsRequired()
