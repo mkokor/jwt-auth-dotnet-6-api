@@ -48,5 +48,17 @@ namespace JwtAuth.BLL.Utilities
             }
             catch (ArgumentNullException) { }
         }
+
+        // Function below checks if provided plaintext password matches with provided hashed password (with specific salt)!
+        public void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedPasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(plaintextPassword));
+                if (computedPasswordHash.SequenceEqual(passwordHash))
+                    return;
+                throw new Exception("Password does not match the username!");
+            }
+        }
     }
 }

@@ -27,5 +27,10 @@ namespace JwtAuth.DAL.Repositories
         {
             await _appDbContext.Users.AddAsync(user);
         }
+
+        public async Task<User?> GetUserByUsername(string username)
+        {
+            return await _appDbContext.Users.FirstOrDefaultAsync(user => user.Username.Equals(username));
+        }
     }
 }

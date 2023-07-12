@@ -8,6 +8,7 @@ using JwtAuth.DAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,6 +27,14 @@ namespace JwtAuth.BLL.Services
             _authenticationService = authenticationService;
         }
 
+        private async Task<User> GetUserByUsername(string username)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByUsername(username);
+            if (user != null)
+                return user;
+            throw new NullReferenceException("User with provided username does not exist!");
+        }
+
         public async Task<List<UserResponseDto>> GetAllUsers()
         {
             var allUsers = await _unitOfWork.UserRepository.GetAllUsers();
@@ -42,6 +51,16 @@ namespace JwtAuth.BLL.Services
             user.PasswordSalt = passwordSalt;
             await _unitOfWork.UserRepository.CreateUser(user);
             await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
+        {
+            var user = await GetUserByUsername(userLoginRequestDto.Username);
+            _authenticationService.ValidatePasswordHash(userLoginRequestDto.Password, user.PsswordHash, user.PasswordSalt);
+            return new UserLoginResponseDto()
+            {
+                JsonWebToken = "Placeholder"
+            };
         }
     }
 }

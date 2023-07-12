@@ -41,7 +41,25 @@ namespace JwtAuth.API.Controllers
             }
             catch (Exception exception)
             {
-                return BadRequest(new { Message = exception.Message });
+                return BadRequest(new { exception.Message });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserLoginResponseDto>> LogInUser(UserLoginRequestDto userLoginRequestDto)
+        {
+            try
+            {
+                var loginResult = await _usersService.LogInUser(userLoginRequestDto);
+                return Ok(loginResult);
+            }
+            catch (NullReferenceException exception)
+            {
+                return BadRequest(new { exception.Message });
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(new { exception.Message });
             }
         }
     }

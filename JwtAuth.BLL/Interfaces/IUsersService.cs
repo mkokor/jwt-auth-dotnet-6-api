@@ -11,6 +11,9 @@ namespace JwtAuth.BLL.Interfaces
     public interface IUsersService
     {
         Task<List<UserResponseDto>> GetAllUsers();
+
         Task RegisterUser(UserRegistrationRequestDto userRegistrationRequestDto);
+
+        Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto);
     }
 }

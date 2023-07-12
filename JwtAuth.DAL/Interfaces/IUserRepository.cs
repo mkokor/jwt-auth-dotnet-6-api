@@ -10,6 +10,9 @@ namespace JwtAuth.DAL.Interfaces
     public interface IUserRepository
     {
         Task<List<User>> GetAllUsers();
+
         Task CreateUser(User user);
+
+        Task<User?> GetUserByUsername(string username);
     }
 }

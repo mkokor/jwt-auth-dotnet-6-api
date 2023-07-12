@@ -14,5 +14,7 @@ namespace JwtAuth.BLL.Interfaces
         void ValidatePasswordStrength(string password);
 
         Task CheckUsernameAvailability(string username);
+
+        void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt);
     }
 }
