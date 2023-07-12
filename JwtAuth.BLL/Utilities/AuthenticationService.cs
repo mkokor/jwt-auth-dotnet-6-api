@@ -72,7 +72,7 @@ namespace JwtAuth.BLL.Utilities
         #region JSON Web Token
         private SymmetricSecurityKey GetSecretKey()
         {
-            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JsonWebToken:Secret").Value));
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtConfiguration:Secret"]));
         }
 
         private SigningCredentials GetDigitalSignature()
@@ -92,6 +92,7 @@ namespace JwtAuth.BLL.Utilities
         private JwtSecurityToken ConfigureJwt(User user)
         {
             return new JwtSecurityToken(
+                issuer: _configuration["JwtConfiguration:Issuer"],
                 claims: GetClaims(user),
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: GetDigitalSignature());

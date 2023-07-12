@@ -1,6 +1,7 @@
 ﻿using JwtAuth.BLL.DTOs.Requests;
 using JwtAuth.BLL.DTOs.Responses;
 using JwtAuth.BLL.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,7 @@ namespace JwtAuth.API.Controllers
             _usersService = usersService;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<List<UserResponseDto>>> GetAllUsers()
         {
             try
