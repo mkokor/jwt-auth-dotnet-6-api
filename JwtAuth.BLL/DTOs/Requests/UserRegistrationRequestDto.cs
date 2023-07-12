@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace JwtAuth.BLL.DTOs.Requests
 {
-    public class UserRequestDto
+    public class UserRegistrationRequestDto
     {
-        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }

@@ -20,16 +20,7 @@ namespace JwtAuth.DAL
 
             #region User
             modelBuilder.Entity<User>()
-                .ToTable("users")
-                .HasData(new List<User>()
-                {
-                    new User()
-                    {
-                        UserId = 1,
-                        FirstName = "John",
-                        LastName = "Doe"
-                    }
-                }); ;
+                .ToTable("users");
 
             modelBuilder.Entity<User>()
                 .Property(user => user.UserId)

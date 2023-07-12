@@ -1,5 +1,6 @@
 using JwtAuth.BLL.Interfaces;
 using JwtAuth.BLL.Services;
+using JwtAuth.BLL.Utilities;
 using JwtAuth.DAL;
 using JwtAuth.DAL.Interfaces;
 using JwtAuth.DAL.Repositories;
@@ -14,6 +15,7 @@ builder.Services.AddEntityFrameworkMySql().AddDbContext<AppDbContext>(options =>
 // Add services to the container.
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
