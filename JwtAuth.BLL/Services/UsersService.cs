@@ -59,7 +59,7 @@ namespace JwtAuth.BLL.Services
             _authenticationService.ValidatePasswordHash(userLoginRequestDto.Password, user.PsswordHash, user.PasswordSalt);
             return new UserLoginResponseDto()
             {
-                JsonWebToken = "Placeholder"
+                JsonWebToken = _authenticationService.GenerateJwt(user)
             };
         }
     }

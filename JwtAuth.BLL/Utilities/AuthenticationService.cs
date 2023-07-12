@@ -1,5 +1,8 @@
 ﻿using JwtAuth.BLL.Interfaces;
+using JwtAuth.DAL.Entities;
 using JwtAuth.DAL.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +16,14 @@ namespace JwtAuth.BLL.Utilities
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration;
 
-        public AuthenticationService(IUnitOfWork unitOfWork)
+        public AuthenticationService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
+
 
         public void EncodePlaintextPassword(string plaintextPassword, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -60,5 +66,18 @@ namespace JwtAuth.BLL.Utilities
                 throw new Exception("Password does not match the username!");
             }
         }
+
+        #region JSON Web Token
+        private SymmetricSecurityKey GetSecretKey()
+        {
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JsonWebToken:Secret").Value));
+        }
+
+        public string GenerateJwt(User user)
+        {
+            var secretKey = GetSecretKey(); // Algorithm is HMAC (symmetric), so the key is secret (not private).
+            return "JSON.Web.Token";
+        }
+        #endregion
     }
 }

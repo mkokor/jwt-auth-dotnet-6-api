@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JwtAuth.DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -16,5 +17,7 @@ namespace JwtAuth.BLL.Interfaces
         Task CheckUsernameAvailability(string username);
 
         void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt);
+
+        string GenerateJwt(User user);
     }
 }
