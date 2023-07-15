@@ -1,5 +1,4 @@
-﻿using JwtAuth.BLL.DTOs.Requests;
-using JwtAuth.BLL.DTOs.Responses;
+﻿using JwtAuth.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace JwtAuth.BLL.Interfaces
 {
-    public interface IUsersService
+    public interface ITokenGenerationService
     {
-        Task<List<UserResponseDto>> GetAllUsers();
+        string GenerateJwt(User user);
     }
 }

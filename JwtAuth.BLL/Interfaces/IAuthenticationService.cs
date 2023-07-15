@@ -1,4 +1,6 @@
-﻿using JwtAuth.DAL.Entities;
+﻿using JwtAuth.BLL.DTOs.Requests;
+using JwtAuth.BLL.DTOs.Responses;
+using JwtAuth.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +12,8 @@ namespace JwtAuth.BLL.Interfaces
 {
     public interface IAuthenticationService
     {
-        void EncodePlaintextPassword(string plaintextPassword, out byte[] passwordHash, out byte[] passwordSalt);
+        Task RegisterUser(UserRegistrationRequestDto userRegistrationRequestDto);
 
-        void ValidatePasswordStrength(string password);
-
-        Task CheckUsernameAvailability(string username);
-
-        void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt);
-
-        string GenerateJwt(User user);
+        Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto);
     }
 }

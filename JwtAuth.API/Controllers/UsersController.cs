@@ -31,37 +31,5 @@ namespace JwtAuth.API.Controllers
                 return BadRequest(new { Message = "Something wnt wrong!"});
             }
         }
-
-        [HttpPost("registration")]
-        public async Task<ActionResult> RegisterUser(UserRegistrationRequestDto userRegistrationRequestDto)
-        {
-            try
-            {
-                await _usersService.RegisterUser(userRegistrationRequestDto);
-                return Ok(new { Message = "User successfully registered!" });
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(new { exception.Message });
-            }
-        }
-
-        [HttpPost("login")]
-        public async Task<ActionResult<UserLoginResponseDto>> LogInUser(UserLoginRequestDto userLoginRequestDto)
-        {
-            try
-            {
-                var loginResult = await _usersService.LogInUser(userLoginRequestDto);
-                return Ok(loginResult);
-            }
-            catch (NullReferenceException exception)
-            {
-                return BadRequest(new { exception.Message });
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(new { exception.Message });
-            }
-        }
     }
 }

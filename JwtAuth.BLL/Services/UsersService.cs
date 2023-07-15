@@ -27,41 +27,10 @@ namespace JwtAuth.BLL.Services
             _authenticationService = authenticationService;
         }
 
-        private async Task<User> GetUserByUsername(string username)
-        {
-            var user = await _unitOfWork.UserRepository.GetUserByUsername(username);
-            if (user != null)
-                return user;
-            throw new NullReferenceException("User with provided username does not exist!");
-        }
-
         public async Task<List<UserResponseDto>> GetAllUsers()
         {
             var allUsers = await _unitOfWork.UserRepository.GetAllUsers();
             return _mapper.Map<List<UserResponseDto>>(allUsers);
-        }
-
-        public async Task RegisterUser(UserRegistrationRequestDto userRegistrationRequestDto)
-        {
-            await _authenticationService.CheckUsernameAvailability(userRegistrationRequestDto.Username);
-            _authenticationService.ValidatePasswordStrength(userRegistrationRequestDto.Password);
-            _authenticationService.EncodePlaintextPassword(userRegistrationRequestDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            var user = _mapper.Map<User>(userRegistrationRequestDto);
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-            user.Role = "Basic User";
-            await _unitOfWork.UserRepository.CreateUser(user);
-            await _unitOfWork.SaveAsync();
-        }
-
-        public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
-        {
-            var user = await GetUserByUsername(userLoginRequestDto.Username);
-            _authenticationService.ValidatePasswordHash(userLoginRequestDto.Password, user.PasswordHash, user.PasswordSalt);
-            return new UserLoginResponseDto()
-            {
-                JsonWebToken = _authenticationService.GenerateJwt(user)
-            };
         }
     }
 }
