@@ -13,7 +13,7 @@ namespace JwtAuth.DAL.Entities
         public string LastName { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
-        public byte[] PsswordHash { get; set; }
+        public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
     }
 }

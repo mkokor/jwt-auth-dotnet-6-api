@@ -47,8 +47,9 @@ namespace JwtAuth.BLL.Services
             _authenticationService.ValidatePasswordStrength(userRegistrationRequestDto.Password);
             _authenticationService.EncodePlaintextPassword(userRegistrationRequestDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
             var user = _mapper.Map<User>(userRegistrationRequestDto);
-            user.PsswordHash = passwordHash;
+            user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
+            user.Role = "Basic User";
             await _unitOfWork.UserRepository.CreateUser(user);
             await _unitOfWork.SaveAsync();
         }
@@ -56,7 +57,7 @@ namespace JwtAuth.BLL.Services
         public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
         {
             var user = await GetUserByUsername(userLoginRequestDto.Username);
-            _authenticationService.ValidatePasswordHash(userLoginRequestDto.Password, user.PsswordHash, user.PasswordSalt);
+            _authenticationService.ValidatePasswordHash(userLoginRequestDto.Password, user.PasswordHash, user.PasswordSalt);
             return new UserLoginResponseDto()
             {
                 JsonWebToken = _authenticationService.GenerateJwt(user)
