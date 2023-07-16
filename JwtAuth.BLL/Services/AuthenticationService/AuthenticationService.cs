@@ -87,7 +87,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         }
 
         // Function below checks if provided plaintext password matches with provided hashed password (with specific salt)!
-        public void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt)
+        private void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {
@@ -98,10 +98,32 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             }
         }
 
+        private RefreshToken CreateRefreshToken(int ownerId, DateTime expirationDate)
+        {
+            return new RefreshToken()
+            {
+                Value = _tokenGenerationService.GenerateRefreshToken(),
+                CreatedAt = DateTime.Now,
+                ExpiresAt = expirationDate,
+                OwnerId = ownerId
+            };
+        }
+
+        private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
+        {
+            var cookieOptions = new CookieOptions()
+            {
+                HttpOnly = true,
+                Expires = refreshToken.ExpiresAt
+            };
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions); // Adding refresh token in HttpOnly cookie...
+        }
+
         public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
         {
             var user = await GetUserByUsername(userLoginRequestDto.Username);
             ValidatePasswordHash(userLoginRequestDto.Password, user.PasswordHash, user.PasswordSalt);
+            SetRefreshTokenInHttpOnlyCookie(CreateRefreshToken(user.UserId, DateTime.Now.AddDays(7)));
             return new UserLoginResponseDto()
             {
                 JsonWebToken = _tokenGenerationService.GenerateJwt(user)

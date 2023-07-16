@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,6 +56,13 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
         public string GenerateJwt(User user)
         {
             return new JwtSecurityTokenHandler().WriteToken(ConfigureJwt(user));
+        }
+        #endregion
+
+        #region RefreshToken
+        public string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
         #endregion
     }
