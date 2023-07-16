@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -110,11 +111,19 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
 
         #region JSON Web Token Owner
+        private string GetJwtOwnerNameIdentifier()
+        {
+            var jwtOwnerNameIdentifier = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (jwtOwnerNameIdentifier == null)
+                throw new AuthenticationException("User is not authenticated!");
+            return jwtOwnerNameIdentifier.Value;
+        }
+
         private int GetJwtOwnerId()
         {
-            if (_httpContextAccessor.HttpContext == null || _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == null)
+            if (_httpContextAccessor.HttpContext == null)
                 throw new Exception("Something went wrong!");
-            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return int.Parse(GetJwtOwnerNameIdentifier());
         }
 
         public async Task<UserResponseDto> GetJwtOwner()
