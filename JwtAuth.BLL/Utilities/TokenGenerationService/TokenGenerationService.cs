@@ -1,5 +1,4 @@
-﻿using JwtAuth.BLL.Interfaces;
-using JwtAuth.DAL.Entities;
+﻿using JwtAuth.DAL.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -10,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.BLL.Utilities
+namespace JwtAuth.BLL.Utilities.TokenGenerationService
 {
     public class TokenGenerationService : ITokenGenerationService
     {

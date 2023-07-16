@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.BLL.Interfaces
+namespace JwtAuth.BLL.Services.UsersService
 {
     public interface IUsersService
     {

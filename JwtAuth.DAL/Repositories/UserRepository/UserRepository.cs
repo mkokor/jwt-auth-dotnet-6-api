@@ -1,5 +1,4 @@
 ﻿using JwtAuth.DAL.Entities;
-using JwtAuth.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.DAL.Repositories
+namespace JwtAuth.DAL.Repositories.UserRepository
 {
     public class UserRepository : IUserRepository
     {

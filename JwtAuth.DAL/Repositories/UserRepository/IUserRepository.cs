@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.DAL.Interfaces
+namespace JwtAuth.DAL.Repositories.UserRepository
 {
     public interface IUserRepository
     {

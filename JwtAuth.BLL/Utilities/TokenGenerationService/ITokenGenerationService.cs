@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.BLL.Interfaces
+namespace JwtAuth.BLL.Utilities.TokenGenerationService
 {
     public interface ITokenGenerationService
     {

@@ -1,9 +1,8 @@
-using JwtAuth.BLL.Interfaces;
-using JwtAuth.BLL.Services;
-using JwtAuth.BLL.Utilities;
+using JwtAuth.BLL.Services.AuthenticationService;
+using JwtAuth.BLL.Services.UsersService;
+using JwtAuth.BLL.Utilities.TokenGenerationService;
 using JwtAuth.DAL;
-using JwtAuth.DAL.Interfaces;
-using JwtAuth.DAL.Repositories;
+using JwtAuth.DAL.Repositories.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

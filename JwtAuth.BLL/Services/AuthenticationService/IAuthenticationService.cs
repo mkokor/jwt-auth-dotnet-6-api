@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.BLL.Interfaces
+namespace JwtAuth.BLL.Services.AuthenticationService
 {
     public interface IAuthenticationService
     {

@@ -1,11 +1,11 @@
-﻿using JwtAuth.DAL.Interfaces;
+﻿using JwtAuth.DAL.Repositories.UserRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtAuth.DAL.Repositories
+namespace JwtAuth.DAL.Repositories.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {

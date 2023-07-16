@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using JwtAuth.BLL.DTOs.Requests;
 using JwtAuth.BLL.DTOs.Responses;
-using JwtAuth.BLL.Interfaces;
+using JwtAuth.BLL.Utilities.TokenGenerationService;
 using JwtAuth.DAL.Entities;
-using JwtAuth.DAL.Interfaces;
+using JwtAuth.DAL.Repositories.UnitOfWork;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -16,7 +16,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace JwtAuth.BLL.Services
+namespace JwtAuth.BLL.Services.AuthenticationService
 {
     public class AuthenticationService : IAuthenticationService
     {
