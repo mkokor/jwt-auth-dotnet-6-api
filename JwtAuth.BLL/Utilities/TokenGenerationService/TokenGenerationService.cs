@@ -20,7 +20,7 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
             _configuration = configuration;
         }
 
-        #region JSON Web Token
+        #region JsonWebToken
         private SymmetricSecurityKey GetSecretKey()
         {
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtConfiguration:Secret"]));

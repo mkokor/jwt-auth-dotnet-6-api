@@ -35,7 +35,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        #region User Registration
+        #region UserRegistration
         private void EncodePlaintextPassword(string plaintextPassword, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
@@ -77,7 +77,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         #endregion
 
 
-        #region User Login
+        #region UserLogin
         private async Task<User> GetUserByUsername(string username)
         {
             var user = await _unitOfWork.UserRepository.GetUserByUsername(username);
@@ -110,7 +110,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         #endregion
 
 
-        #region JSON Web Token Owner
+        #region JsonWebTokenOwner
         private string GetJwtOwnerNameIdentifier()
         {
             var jwtOwnerNameIdentifier = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
