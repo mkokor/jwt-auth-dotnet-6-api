@@ -16,7 +16,7 @@ namespace JwtAuth.DAL.Repositories.UnitOfWork
         public UnitOfWork(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
-            UserRepository = new UserRepository(_appDbContext);
+            UserRepository = new UserRepository.UserRepository(_appDbContext);
         }
 
         public async Task SaveAsync()

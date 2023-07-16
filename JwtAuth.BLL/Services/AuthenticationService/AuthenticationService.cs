@@ -4,6 +4,7 @@ using JwtAuth.BLL.DTOs.Responses;
 using JwtAuth.BLL.Utilities.TokenGenerationService;
 using JwtAuth.DAL.Entities;
 using JwtAuth.DAL.Repositories.UnitOfWork;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -22,13 +23,15 @@ namespace JwtAuth.BLL.Services.AuthenticationService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITokenGenerationService _tokenGenerationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
-        public AuthenticationService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper, ITokenGenerationService tokenGenerationService)
+        public AuthenticationService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper, ITokenGenerationService tokenGenerationService, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _tokenGenerationService = tokenGenerationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #region User Registration
