@@ -109,9 +109,19 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         #endregion
 
 
-        public Task<UserResponseDto> GetJwtOwner()
+        #region JSON Web Token Owner
+        private int GetJwtOwnerId()
         {
-            throw new NotImplementedException();
+            if (_httpContextAccessor.HttpContext == null || _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == null)
+                throw new Exception("Something went wrong!");
+            return int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
+
+        public async Task<UserResponseDto> GetJwtOwner()
+        {
+            var user = await _unitOfWork.UserRepository.GetUserById(GetJwtOwnerId());
+            return _mapper.Map<UserResponseDto>(user);
+        }
+        #endregion
     }
 }

@@ -58,5 +58,19 @@ namespace JwtAuth.API.Controllers
             // Reading claims values from ClaimsPrincipal object...
             return Ok(new { Username = User?.Identity?.Name });
         }
+
+        [HttpGet("jwt-owner"), Authorize]
+        public async Task<ActionResult<UserResponseDto>> GetJwtOwner()
+        {
+            try
+            {
+                var user = await _authenticationService.GetJwtOwner();
+                return Ok(user);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(new { exception.Message });
+            }
+        }
     }
 }
