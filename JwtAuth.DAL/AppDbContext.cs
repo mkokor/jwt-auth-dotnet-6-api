@@ -14,6 +14,7 @@ namespace JwtAuth.DAL
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
        
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         private void HashPassword(string plaintextPassword, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -58,6 +59,31 @@ namespace JwtAuth.DAL
             modelBuilder.Entity<User>()
                 .Property(user => user.LastName)
                 .HasColumnName("last_name");
+            #endregion
+
+            #region RefreshToken
+            modelBuilder.Entity<RefreshToken>()
+                .ToTable("refresh_tokens");
+
+            modelBuilder.Entity<RefreshToken>()
+                .Property(refreshToken => refreshToken.RefreshTokenId)
+                .HasColumnName("id");
+
+            modelBuilder.Entity<RefreshToken>()
+                .Property(refreshToken => refreshToken.Value)
+                .HasColumnName("value");
+
+            modelBuilder.Entity<RefreshToken>()
+                .Property(refreshToken => refreshToken.CreatedAt)
+                .HasColumnName("created_at");
+
+            modelBuilder.Entity<RefreshToken>()
+                .Property(refreshToken => refreshToken.ExpiresAt)
+                .HasColumnName("expires_at");
+
+            modelBuilder.Entity<RefreshToken>()
+                .Property(refreshToken => refreshToken.OwnerId)
+                .HasColumnName("owner_id");
             #endregion
         }
     }
