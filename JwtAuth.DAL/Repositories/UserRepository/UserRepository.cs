@@ -31,5 +31,10 @@ namespace JwtAuth.DAL.Repositories.UserRepository
         {
             return await _appDbContext.Users.FirstOrDefaultAsync(user => user.Username.Equals(username));
         }
+
+        public async Task<User?> GetUserById(int userId)
+        {
+            return await _appDbContext.Users.FirstOrDefaultAsync(user => user.UserId == userId);
+        }
     }
 }

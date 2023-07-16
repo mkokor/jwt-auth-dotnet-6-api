@@ -107,5 +107,11 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             };
         }
         #endregion
+
+
+        public Task<UserResponseDto> GetJwtOwner()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -15,5 +15,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         Task RegisterUser(UserRegistrationRequestDto userRegistrationRequestDto);
 
         Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto);
+
+        Task<UserResponseDto> GetJwtOwner();
     }
 }

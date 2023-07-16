@@ -14,5 +14,7 @@ namespace JwtAuth.DAL.Repositories.UserRepository
         Task CreateUser(User user);
 
         Task<User?> GetUserByUsername(string username);
+
+        Task<User?> GetUserById(int userId);
     }
 }

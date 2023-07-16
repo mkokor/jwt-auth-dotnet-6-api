@@ -36,6 +36,7 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
         {
             return new List<Claim>()
             {
+                new Claim("sub", $"{user.UserId}"),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role, user.Role)
             };
