@@ -100,7 +100,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         private RefreshToken CreateRefreshToken(int ownerId, DateTime expirationDate)
         {
-            return new RefreshToken()
+            return new RefreshToken
             {
                 Value = _tokenGenerationService.GenerateRefreshToken(),
                 CreatedAt = DateTime.Now,
@@ -111,7 +111,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
         {
-            var cookieOptions = new CookieOptions()
+            var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Expires = refreshToken.ExpiresAt
@@ -124,7 +124,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             var user = await GetUserByUsername(userLoginRequestDto.Username);
             ValidatePasswordHash(userLoginRequestDto.Password, user.PasswordHash, user.PasswordSalt);
             SetRefreshTokenInHttpOnlyCookie(CreateRefreshToken(user.UserId, DateTime.Now.AddDays(7)));
-            return new UserLoginResponseDto()
+            return new UserLoginResponseDto
             {
                 JsonWebToken = _tokenGenerationService.GenerateJwt(user)
             };

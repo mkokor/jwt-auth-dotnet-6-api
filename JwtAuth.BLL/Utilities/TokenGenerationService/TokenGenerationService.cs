@@ -35,7 +35,7 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
 
         private List<Claim> GetClaims(User user)
         {
-            return new List<Claim>()
+            return new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.UserId}"), // Subject identifier will be user identification number!
                 new Claim(ClaimTypes.Name, user.Username),

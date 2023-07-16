@@ -18,13 +18,11 @@ namespace JwtAuth.BLL.Services.UsersService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IAuthenticationService _authenticationService;
 
-        public UsersService(IUnitOfWork unitOfWork, IMapper mapper, IAuthenticationService authenticationService)
+        public UsersService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _authenticationService = authenticationService;
         }
 
         public async Task<List<UserResponseDto>> GetAllUsers()
