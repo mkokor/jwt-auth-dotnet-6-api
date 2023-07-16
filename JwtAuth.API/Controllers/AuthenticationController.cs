@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Security.Claims;
 
 namespace JwtAuth.API.Controllers
 {
@@ -49,6 +50,13 @@ namespace JwtAuth.API.Controllers
             {
                 return BadRequest(new { exception.Message });
             }
+        }
+
+        [HttpGet("jwt-owner/username"), Authorize]
+        public ActionResult GetJwtOwnerUsername()
+        {
+            // Reading claims values from ClaimsPrincipal object...
+            return Ok(new { Username = User?.Identity?.Name });
         }
     }
 }
