@@ -142,10 +142,25 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions); // Adding refresh token in HttpOnly cookie...
         }
 
-        private void ValidateRefreshToken()
+        private async Task<RefreshToken?> GetRefreshTokenByValue(string value)
         {
-            var refreshToken = _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+            return await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByValue(value);
+        }
 
+        private string GetRefreshTokenFromCookie()
+        {
+            return _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+        }
+
+        private async Task ValidateRefreshToken(string refreshTokenValue)
+        {
+            var refreshToken = await GetRefreshTokenByValue(GetRefreshTokenFromCookie());
+            if (refreshToken == null)
+                throw new AuthenticationException("Refresh token could not be found!");
+            if (refreshToken.ExpiresAt < DateTime.Now)
+                throw new AuthenticationException("Refresh token expired!");
+            if (!refreshToken.Value.Equals(refreshTokenValue))
+                throw new AuthenticationException("Invalid refresh token value!");
         }
 
         public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
@@ -159,9 +174,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             };
         }
 
-        public Task RefreshJwt()
+        public async Task RefreshJwt()
         {
-            throw new NotImplementedException();
+            await ValidateRefreshToken(_httpContextAccessor.HttpContext.Request.Cookies["refreshToken"]);
         }
         #endregion
 
