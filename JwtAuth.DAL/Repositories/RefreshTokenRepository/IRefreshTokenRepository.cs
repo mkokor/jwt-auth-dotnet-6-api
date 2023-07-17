@@ -9,7 +9,7 @@ namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
 {
     public interface IRefreshTokenRepository
     {
-        Task<RefreshToken> CreateRefreshToken(RefreshToken refreshToken);
+        Task<RefreshToken?> CreateRefreshToken(RefreshToken refreshToken);
 
         Task<RefreshToken?> GetRefreshTokenByOwnerId(int ownerId);
 

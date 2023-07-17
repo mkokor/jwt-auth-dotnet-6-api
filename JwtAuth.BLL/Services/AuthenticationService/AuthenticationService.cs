@@ -144,23 +144,28 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         private async Task<RefreshToken?> GetRefreshTokenByValue(string value)
         {
-            return await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByValue(value);
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByValue(value);
+            if (refreshToken == null)
+                throw new AuthenticationException("Refresh token could not be found!");
+            return refreshToken;
         }
 
         private string GetRefreshTokenFromCookie()
         {
-            return _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+            var refreshTokenValue = _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+            if (refreshTokenValue == null)
+                throw new AuthenticationException("Refresh token could not be found!");
+            return refreshTokenValue;
         }
 
-        private async Task ValidateRefreshToken(string refreshTokenValue)
+        private async Task<RefreshToken> ValidateRefreshToken(string refreshTokenValue)
         {
             var refreshToken = await GetRefreshTokenByValue(GetRefreshTokenFromCookie());
-            if (refreshToken == null)
-                throw new AuthenticationException("Refresh token could not be found!");
             if (refreshToken.ExpiresAt < DateTime.Now)
                 throw new AuthenticationException("Refresh token expired!");
             if (!refreshToken.Value.Equals(refreshTokenValue))
                 throw new AuthenticationException("Invalid refresh token value!");
+            return refreshToken;
         }
 
         public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
@@ -176,7 +181,12 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         public async Task RefreshJwt()
         {
-            await ValidateRefreshToken(_httpContextAccessor.HttpContext.Request.Cookies["refreshToken"]);
+            var refreshToken = await ValidateRefreshToken(_httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+            SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(refreshToken.OwnerId));
+            return new JwtRefreshResponseDto
+            {
+                JsonWebToken = _tokenGenerationService.GenerateJwt(refreshToken.Owner)
+            };
         }
         #endregion
 

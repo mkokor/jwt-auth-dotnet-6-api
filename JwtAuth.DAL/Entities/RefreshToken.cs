@@ -16,5 +16,6 @@ namespace JwtAuth.DAL.Entities
 
         [ForeignKey("User")]
         public int OwnerId;
+        public User Owner { get; set; }
     }
 }
