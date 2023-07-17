@@ -98,11 +98,38 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             }
         }
 
-        private async Task<RefreshToken> CreateRefreshToken(int ownerId)
+        private async Task<RefreshToken> GetRefreshTokenByOwnerId(int ownerId)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(ownerId));
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByOwnerId(ownerId);
+            if (refreshToken == null)
+                throw new NullReferenceException("User with provided identifier does not own refresh token!");
+            return refreshToken;
+        }
+
+        private async Task<RefreshToken> UpdateRefreshToken(int ownerId)
+        {
+            var refreshToken = await GetRefreshTokenByOwnerId(ownerId);
+            var newRefreshToken = _tokenGenerationService.GenerateRefreshToken(ownerId);
+            refreshToken.Value = newRefreshToken.Value;
+            refreshToken.CreatedAt = newRefreshToken.CreatedAt;
+            refreshToken.ExpiresAt = newRefreshToken.ExpiresAt;
             await _unitOfWork.SaveAsync();
             return refreshToken;
+        }
+
+        private async Task<RefreshToken> CreateRefreshToken(int ownerId)
+        {
+            try
+            {
+                var refreshToken = await UpdateRefreshToken(ownerId);
+                return refreshToken;
+            }
+            catch (NullReferenceException)
+            {
+                var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(ownerId));
+                await _unitOfWork.SaveAsync();
+                return refreshToken;
+            }
         }
 
         private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
