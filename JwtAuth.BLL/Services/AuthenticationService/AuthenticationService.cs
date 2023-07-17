@@ -98,15 +98,17 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             }
         }
 
-        private RefreshToken CreateRefreshToken(int ownerId, DateTime expirationDate)
+        private async Task<RefreshToken> CreateRefreshToken(int ownerId, DateTime expirationDate)
         {
-            return new RefreshToken
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(new RefreshToken
             {
                 Value = _tokenGenerationService.GenerateRefreshToken(),
                 CreatedAt = DateTime.Now,
                 ExpiresAt = expirationDate,
                 OwnerId = ownerId
-            };
+            });
+            await _unitOfWork.SaveAsync();
+            return refreshToken;
         }
 
         private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
@@ -123,7 +125,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         {
             var user = await GetUserByUsername(userLoginRequestDto.Username);
             ValidatePasswordHash(userLoginRequestDto.Password, user.PasswordHash, user.PasswordSalt);
-            SetRefreshTokenInHttpOnlyCookie(CreateRefreshToken(user.UserId, DateTime.Now.AddDays(7)));
+            SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(user.UserId, DateTime.Now.AddDays(7)));
             return new UserLoginResponseDto
             {
                 JsonWebToken = _tokenGenerationService.GenerateJwt(user)
