@@ -18,6 +18,6 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         Task<UserResponseDto> GetJwtOwner();
 
-        Task RefreshJwt();
+        Task<JwtRefreshResponseDto> RefreshJwt();
     }
 }

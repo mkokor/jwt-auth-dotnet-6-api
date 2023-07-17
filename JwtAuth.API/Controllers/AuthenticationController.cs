@@ -73,5 +73,23 @@ namespace JwtAuth.API.Controllers
                 return BadRequest(new { exception.Message });
             }
         }
+
+        [HttpGet("jwt-refresh")]
+        public async Task<ActionResult<JwtRefreshResponseDto>> RefreshJwt()
+        {
+            try
+            {
+                var result = await _authenticationService.RefreshJwt();
+                return Ok(result);
+            }
+            catch (AuthenticationException exception)
+            {
+                return Unauthorized(new { exception.Message });
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(new { exception.Message });
+            }
+        }
     }
 }

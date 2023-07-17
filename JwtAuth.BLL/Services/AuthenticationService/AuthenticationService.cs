@@ -146,7 +146,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         {
             var refreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByValue(value);
             if (refreshToken == null)
-                throw new AuthenticationException("Refresh token could not be found!");
+                throw new AuthenticationException("Invalid refresh token!");
             return refreshToken;
         }
 
@@ -154,7 +154,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         {
             var refreshTokenValue = _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
             if (refreshTokenValue == null)
-                throw new AuthenticationException("Refresh token could not be found!");
+                throw new AuthenticationException("Refresh token could not be found in cookie!");
             return refreshTokenValue;
         }
 
@@ -179,9 +179,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             };
         }
 
-        public async Task RefreshJwt()
+        public async Task<JwtRefreshResponseDto> RefreshJwt()
         {
-            var refreshToken = await ValidateRefreshToken(_httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+            var refreshToken = await ValidateRefreshToken(_httpContextAccessor.HttpContext.Request.Cookies["refreshToken"]);
             SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(refreshToken.OwnerId));
             return new JwtRefreshResponseDto
             {
