@@ -142,6 +142,12 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions); // Adding refresh token in HttpOnly cookie...
         }
 
+        private void ValidateRefreshToken()
+        {
+            var refreshToken = _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
+
+        }
+
         public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
         {
             var user = await GetUserByUsername(userLoginRequestDto.Username);
@@ -151,6 +157,11 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             {
                 JsonWebToken = _tokenGenerationService.GenerateJwt(user)
             };
+        }
+
+        public Task RefreshJwt()
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

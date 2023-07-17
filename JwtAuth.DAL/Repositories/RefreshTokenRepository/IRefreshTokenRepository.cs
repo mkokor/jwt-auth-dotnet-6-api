@@ -12,5 +12,7 @@ namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
         Task<RefreshToken> CreateRefreshToken(RefreshToken refreshToken);
 
         Task<RefreshToken?> GetRefreshTokenByOwnerId(int ownerId);
+
+        Task<RefreshToken?> GetRefreshTokenByValue(string value);
     }
 }

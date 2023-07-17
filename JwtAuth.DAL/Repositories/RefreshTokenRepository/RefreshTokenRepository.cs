@@ -27,5 +27,10 @@ namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
         {
             return await _appDbContext.RefreshTokens.FirstOrDefaultAsync(refreshToken => refreshToken.OwnerId == ownerId);
         }
+
+        public async Task<RefreshToken?> GetRefreshTokenByValue(string value)
+        {
+            return await _appDbContext.RefreshTokens.FirstOrDefaultAsync(refreshToken => refreshToken.Value == value);
+        }
     }
 }
