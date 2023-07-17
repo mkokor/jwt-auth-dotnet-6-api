@@ -11,6 +11,6 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
     {
         string GenerateJwt(User user);
 
-        string GenerateRefreshToken();
+        RefreshToken GenerateRefreshToken(int ownerId);
     }
 }
