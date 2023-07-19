@@ -1,5 +1,6 @@
 # JSON Web Token Authentication and Authorization API
 <p align="justify">
+This repository provides the source code for a .NET 6 Web API implementing JWT-based authentication and authorization. In addition to the access token (JWT), the server also generates a refresh token, which is securely stored in an HttpOnly cookie. Moreover, the code includes a method to read and process claims from the JWT, enabling the application to extract relevant user information and permissions during the authentication process. On localhost startup, Swagger UI of an API can be found at <a href="https://localhost:5000/swagger/index.html">https://localhost:5000/swagger/index.html</a>.
 </p>
 
 
@@ -13,7 +14,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
 ```
 
 <p align="justify">
-Based on the example above, it can be concluded that a JWT consists of three main parts that are separated by a dot character. The content of each part is encoded    in Base64URL format. First two Base64URL codes represent a JSON objects, and that is precisely why the descriptive attribute "JSON" is present in the name of this type     of token. The term "Web" indicates that this type of token is used exclusively on the internet.
+Based on the example above, it can be concluded that a JWT consists of three main parts that are separated by a dot character. The content of each part is encoded  in Base64URL format. First two Base64URL codes represent a JSON objects, and that is precisely why the descriptive attribute "JSON" is present in the name of this type     of token. The term "Web" indicates that this type of token is used exclusively on the internet.
 Therefore, a JWT contains three JSON objects (encoded in Base64URL format) within it. Each of these objects carries specific information used to determine the validity and integrity of the JWT, as well as the identity of the user for whom the JWT is issued.
 </p>
 
