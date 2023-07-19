@@ -1,11 +1,5 @@
 ﻿using JwtAuth.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
 {
@@ -21,7 +15,7 @@ namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
         public async Task<RefreshToken?> CreateRefreshToken(RefreshToken refreshToken)
         {
             await _appDbContext.RefreshTokens.AddAsync(refreshToken);
-            return await GetRefreshTokenByOwnerId(refreshToken.OwnerId);
+            return refreshToken;
         }
 
         public async Task<RefreshToken?> GetRefreshTokenByOwnerId(int ownerId)

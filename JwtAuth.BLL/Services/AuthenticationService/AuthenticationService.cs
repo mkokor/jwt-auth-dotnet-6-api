@@ -6,17 +6,11 @@ using JwtAuth.DAL.Entities;
 using JwtAuth.DAL.Repositories.UnitOfWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace JwtAuth.BLL.Services.AuthenticationService
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JwtAuth.DAL.Entities
 {
@@ -16,6 +11,6 @@ namespace JwtAuth.DAL.Entities
 
         [ForeignKey("User")]
         public int OwnerId;
-        public User Owner { get; set; }
+        public User? Owner { get; set; }
     }
 }

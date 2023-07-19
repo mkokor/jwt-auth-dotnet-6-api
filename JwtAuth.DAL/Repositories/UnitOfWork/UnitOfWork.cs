@@ -1,10 +1,5 @@
 ﻿using JwtAuth.DAL.Repositories.RefreshTokenRepository;
 using JwtAuth.DAL.Repositories.UserRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JwtAuth.DAL.Repositories.UnitOfWork
 {

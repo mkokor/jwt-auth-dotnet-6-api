@@ -1,8 +1,6 @@
-﻿using JwtAuth.BLL.DTOs.Requests;
-using JwtAuth.BLL.DTOs.Responses;
+﻿using JwtAuth.BLL.DTOs.Responses;
 using JwtAuth.BLL.Services.UsersService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JwtAuth.API.Controllers
@@ -28,7 +26,7 @@ namespace JwtAuth.API.Controllers
             }
             catch (Exception)
             {
-                return BadRequest(new { Message = "Something wnt wrong!"});
+                return BadRequest(new { Message = "Something went wrong!"});
             }
         }
     }
