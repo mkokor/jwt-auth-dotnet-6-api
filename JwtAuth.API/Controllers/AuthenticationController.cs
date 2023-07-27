@@ -19,7 +19,7 @@ namespace JwtAuth.API.Controllers
         }
 
         [HttpPost("registration")]
-        public async Task<ActionResult> RegisterUser(UserRegistrationRequestDto userRegistrationRequestDto)
+        public async Task<ActionResult> RegisterUser([FromBody] UserRegistrationRequestDto userRegistrationRequestDto)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace JwtAuth.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserLoginResponseDto>> LogInUser(UserLoginRequestDto userLoginRequestDto)
+        public async Task<ActionResult<UserLoginResponseDto>> LogInUser([FromBody] UserLoginRequestDto userLoginRequestDto)
         {
             try
             {
