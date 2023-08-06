@@ -113,17 +113,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         private async Task<RefreshToken> CreateRefreshToken(int ownerId)
         {
-            try
-            {
-                var refreshToken = await UpdateRefreshToken(ownerId);
-                return refreshToken;
-            }
-            catch (NullReferenceException)
-            {
-                var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(ownerId));
-                await _unitOfWork.SaveAsync();
-                return refreshToken;
-            }
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(ownerId));
+            await _unitOfWork.SaveAsync();
+            return refreshToken;
         }
 
         private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
@@ -131,7 +123,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = refreshToken.ExpiresAt
+                Expires = refreshToken.ExpiresAt,
+                SameSite = SameSiteMode.None,
+                Secure = true
             };
             _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions); // Adding refresh token in HttpOnly cookie...
         }
@@ -154,12 +148,19 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         private async Task<RefreshToken> ValidateRefreshToken(string refreshTokenValue)
         {
-            var refreshToken = await GetRefreshTokenByValue(GetRefreshTokenFromCookie());
+            var refreshToken = await GetRefreshTokenByValue(refreshTokenValue);
             if (refreshToken.ExpiresAt < DateTime.Now)
+            {
+                await DeleteRefreshToken(refreshToken);
                 throw new AuthenticationException("Refresh token expired!");
-            if (!refreshToken.Value.Equals(refreshTokenValue))
-                throw new AuthenticationException("Invalid refresh token value!");
+            }
             return refreshToken;
+        }
+
+        private async Task DeleteRefreshToken(RefreshToken refreshToken)
+        {
+            _unitOfWork.RefreshTokenRepository.DeleteRefreshToken(refreshToken);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto)
@@ -175,7 +176,8 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         public async Task<JwtRefreshResponseDto> RefreshJwt()
         {
-            var refreshToken = await ValidateRefreshToken(_httpContextAccessor.HttpContext.Request.Cookies["refreshToken"]);
+            var refreshToken = await ValidateRefreshToken(GetRefreshTokenFromCookie());
+            await DeleteRefreshToken(refreshToken);
             SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(refreshToken.OwnerId));
             return new JwtRefreshResponseDto
             {

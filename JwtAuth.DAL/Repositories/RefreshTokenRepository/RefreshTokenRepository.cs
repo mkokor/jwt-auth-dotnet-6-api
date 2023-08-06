@@ -29,5 +29,10 @@ namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
             return await _appDbContext.RefreshTokens.Include(refreshToken => refreshToken.Owner)
                                                     .FirstOrDefaultAsync(refreshToken => refreshToken.Value == value);
         }
+
+        public void DeleteRefreshToken(RefreshToken refreshToken)
+        {
+            _appDbContext.RefreshTokens.Remove(refreshToken);
+        }
     }
 }
