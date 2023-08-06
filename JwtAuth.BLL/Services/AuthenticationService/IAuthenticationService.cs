@@ -9,8 +9,10 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         Task<UserLoginResponseDto> LogInUser(UserLoginRequestDto userLoginRequestDto);
 
-        Task<UserResponseDto> GetJwtOwner();
+        Task<UserResponseDto> GetAccessTokenOwner();
 
-        Task<JwtRefreshResponseDto> RefreshJwt();
+        Task<AccessTokenRefreshResponseDto> RefreshAccessToken();
+
+        Task LogOutUser();
     }
 }
