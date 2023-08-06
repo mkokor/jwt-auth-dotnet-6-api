@@ -50,19 +50,19 @@ namespace JwtAuth.API.Controllers
             }
         }
 
-        [HttpGet("jwt-owner/username"), Authorize]
-        public ActionResult GetJwtOwnerUsername()
+        [HttpGet("access-token-owner/username"), Authorize]
+        public ActionResult GetAccessTokenOwnerUsername()
         {
             // Reading claims values from ClaimsPrincipal object...
             return Ok(new { Username = User?.Identity?.Name });
         }
 
-        [HttpGet("jwt-owner"), Authorize]
-        public async Task<ActionResult<UserResponseDto>> GetJwtOwner()
+        [HttpGet("access-token-owner"), Authorize]
+        public async Task<ActionResult<UserResponseDto>> GetAccessTokenOwner()
         {
             try
             {
-                var user = await _authenticationService.GetJwtOwner();
+                var user = await _authenticationService.GetAccessTokenOwner();
                 return Ok(user);
             }
             catch (Exception exception)
@@ -71,17 +71,31 @@ namespace JwtAuth.API.Controllers
             }
         }
 
-        [HttpGet("jwt-refresh")]
-        public async Task<ActionResult<JwtRefreshResponseDto>> RefreshJwt()
+        [HttpGet("access-token-refresh")]
+        public async Task<ActionResult<AccessTokenRefreshResponseDto>> RefreshAccessToken()
         {
             try
             {
-                var result = await _authenticationService.RefreshJwt();
+                var result = await _authenticationService.RefreshAccessToken();
                 return Ok(result);
             }
             catch (AuthenticationException exception)
             {
                 return Unauthorized(new { exception.Message });
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(new { exception.Message });
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<ActionResult> LogOutUser()
+        {
+            try
+            {
+                await _authenticationService.LogOutUser();
+                return Ok(new { Message = "User successfully logged out!" });
             }
             catch (Exception exception)
             {
