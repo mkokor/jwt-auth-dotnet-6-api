@@ -113,17 +113,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         private async Task<RefreshToken> CreateRefreshToken(int ownerId)
         {
-            try
-            {
-                var refreshToken = await UpdateRefreshToken(ownerId);
-                return refreshToken;
-            }
-            catch (NullReferenceException)
-            {
-                var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(ownerId));
-                await _unitOfWork.SaveAsync();
-                return refreshToken;
-            }
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(ownerId));
+            await _unitOfWork.SaveAsync();
+            return refreshToken;
         }
 
         private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
@@ -154,11 +146,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         private async Task<RefreshToken> ValidateRefreshToken(string refreshTokenValue)
         {
-            var refreshToken = await GetRefreshTokenByValue(GetRefreshTokenFromCookie());
+            var refreshToken = await GetRefreshTokenByValue(refreshTokenValue);
             if (refreshToken.ExpiresAt < DateTime.Now)
                 throw new AuthenticationException("Refresh token expired!");
-            if (!refreshToken.Value.Equals(refreshTokenValue))
-                throw new AuthenticationException("Invalid refresh token value!");
             return refreshToken;
         }
 
@@ -175,7 +165,8 @@ namespace JwtAuth.BLL.Services.AuthenticationService
 
         public async Task<JwtRefreshResponseDto> RefreshJwt()
         {
-            var refreshToken = await ValidateRefreshToken(_httpContextAccessor.HttpContext.Request.Cookies["refreshToken"]);
+            var refreshToken = await ValidateRefreshToken(GetRefreshTokenFromCookie());
+            // Delete refresh token!
             SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(refreshToken.OwnerId));
             return new JwtRefreshResponseDto
             {
