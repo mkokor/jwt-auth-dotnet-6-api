@@ -70,7 +70,6 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         }
         #endregion
 
-
         #region UserLogin
         private async Task<User> GetUserByUsername(string username)
         {
@@ -92,28 +91,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             }
         }
 
-        private async Task<RefreshToken> GetRefreshTokenByOwnerId(int ownerId)
+        private async Task<RefreshToken> CreateRefreshToken(User user)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByOwnerId(ownerId);
-            if (refreshToken == null)
-                throw new NullReferenceException("User with provided identifier does not own refresh token!");
-            return refreshToken;
-        }
-
-        private async Task<RefreshToken> UpdateRefreshToken(int ownerId)
-        {
-            var refreshToken = await GetRefreshTokenByOwnerId(ownerId);
-            var newRefreshToken = _tokenGenerationService.GenerateRefreshToken(ownerId);
-            refreshToken.Value = newRefreshToken.Value;
-            refreshToken.CreatedAt = newRefreshToken.CreatedAt;
-            refreshToken.ExpiresAt = newRefreshToken.ExpiresAt;
-            await _unitOfWork.SaveAsync();
-            return refreshToken;
-        }
-
-        private async Task<RefreshToken> CreateRefreshToken(int ownerId)
-        {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(ownerId));
+            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(user));
             await _unitOfWork.SaveAsync();
             return refreshToken;
         }
@@ -130,6 +110,11 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions); // Adding refresh token in HttpOnly cookie...
         }
 
+        private void RemoveRefreshTokenCookie()
+        {
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("refreshToken");
+        }
+
         private async Task<RefreshToken?> GetRefreshTokenByValue(string value)
         {
             var refreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByValue(value);
@@ -142,7 +127,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         {
             var refreshTokenValue = _httpContextAccessor.HttpContext.Request.Cookies["refreshToken"];
             if (refreshTokenValue == null)
-                throw new AuthenticationException("Refresh token could not be found in cookie!");
+                throw new AuthenticationException("Refresh token could not be found!");
             return refreshTokenValue;
         }
 
@@ -167,45 +152,59 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         {
             var user = await GetUserByUsername(userLoginRequestDto.Username);
             ValidatePasswordHash(userLoginRequestDto.Password, user.PasswordHash, user.PasswordSalt);
-            SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(user.UserId));
+            SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(user));
             return new UserLoginResponseDto
             {
-                JsonWebToken = _tokenGenerationService.GenerateJwt(user)
+                AccessToken = _tokenGenerationService.GenerateAccessToken(user)
             };
         }
 
-        public async Task<JwtRefreshResponseDto> RefreshJwt()
+        public async Task<AccessTokenRefreshResponseDto> RefreshAccessToken()
         {
             var refreshToken = await ValidateRefreshToken(GetRefreshTokenFromCookie());
             await DeleteRefreshToken(refreshToken);
-            SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(refreshToken.OwnerId));
-            return new JwtRefreshResponseDto
+            SetRefreshTokenInHttpOnlyCookie(await CreateRefreshToken(refreshToken.Owner));
+            return new AccessTokenRefreshResponseDto
             {
-                JsonWebToken = _tokenGenerationService.GenerateJwt(refreshToken.Owner)
+                AccessToken = _tokenGenerationService.GenerateAccessToken(refreshToken.Owner)
             };
+        }
+
+        public async Task LogOutUser()
+        {
+            try
+            {
+                var refreshToken = await ValidateRefreshToken(GetRefreshTokenFromCookie());
+                await DeleteRefreshToken(refreshToken);
+                RemoveRefreshTokenCookie();
+                // Access token should be deleted on client side (possibly from local storage).
+            }
+            catch (Exception)
+            {
+                RemoveRefreshTokenCookie();
+            }
         }
         #endregion
 
-
-        #region JsonWebTokenOwner
-        private string GetJwtOwnerNameIdentifier()
+        #region AccessTokenOwner
+        private string GetAccessTokenOwnerNameIdentifier()
         {
-            var jwtOwnerNameIdentifier = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (jwtOwnerNameIdentifier == null)
+            var accessTokenOwnerNameIdentifier = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (accessTokenOwnerNameIdentifier == null)
                 throw new AuthenticationException("User is not authenticated!");
-            return jwtOwnerNameIdentifier.Value;
+            return accessTokenOwnerNameIdentifier.Value;
         }
 
-        private int GetJwtOwnerId()
+        private int GetAccessTokenOwnerId()
         {
             if (_httpContextAccessor.HttpContext == null)
                 throw new Exception("Something went wrong!");
-            return int.Parse(GetJwtOwnerNameIdentifier());
+            return int.Parse(GetAccessTokenOwnerNameIdentifier());
         }
 
-        public async Task<UserResponseDto> GetJwtOwner()
+        public async Task<UserResponseDto> GetAccessTokenOwner()
         {
-            var user = await _unitOfWork.UserRepository.GetUserById(GetJwtOwnerId());
+            var user = await _unitOfWork.UserRepository.GetUserById(GetAccessTokenOwnerId());
             return _mapper.Map<UserResponseDto>(user);
         }
         #endregion

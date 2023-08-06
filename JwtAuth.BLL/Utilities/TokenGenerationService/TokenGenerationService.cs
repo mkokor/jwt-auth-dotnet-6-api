@@ -18,18 +18,35 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
         }
 
         #region JsonWebToken
-        private SymmetricSecurityKey GetSecretKey()
+        private SymmetricSecurityKey GetSecretKey(string secret)
         {
-            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtConfiguration:Secret"]));
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         }
 
-        private SigningCredentials GetDigitalSignature()
+        private SigningCredentials GetDigitalSignature(string secret)
         {
             // Algorithm is HMAC (symmetric), so the key is secret (not private).
-            return new SigningCredentials(GetSecretKey(), SecurityAlgorithms.HmacSha512Signature);
+            return new SigningCredentials(GetSecretKey(secret), SecurityAlgorithms.HmacSha512Signature);
         }
 
-        private List<Claim> GetClaims(User user)
+        private JwtSecurityToken ConfigureJwt(List<Claim> claims, string secret)
+        {
+            return new JwtSecurityToken(
+                issuer: _configuration["JwtConfiguration:Issuer"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: GetDigitalSignature(secret));
+        }
+
+
+        private string GenerateJwt(List<Claim> claims, string secret)
+        {
+            return new JwtSecurityTokenHandler().WriteToken(ConfigureJwt(claims, secret));
+        }
+        #endregion
+
+        #region AccessToken
+        private List<Claim> GetAccessTokenClaims(User user)
         {
             return new List<Claim>
             {
@@ -39,31 +56,22 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
             };
         }
 
-        private JwtSecurityToken ConfigureJwt(User user)
+        public string GenerateAccessToken(User user)
         {
-            return new JwtSecurityToken(
-                issuer: _configuration["JwtConfiguration:Issuer"],
-                claims: GetClaims(user),
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: GetDigitalSignature());
-        }
-
-
-        public string GenerateJwt(User user)
-        {
-            return new JwtSecurityTokenHandler().WriteToken(ConfigureJwt(user));
+            var secret = _configuration["JwtConfiguration:AccessToken:Secret"];
+            return GenerateJwt(GetAccessTokenClaims(user), secret);
         }
         #endregion
 
         #region RefreshToken
-        public RefreshToken GenerateRefreshToken(int ownerId)
+        public RefreshToken GenerateRefreshToken(User user)
         {
             return new RefreshToken
             {
                 Value = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 CreatedAt = DateTime.Now,
                 ExpiresAt = DateTime.Now.AddDays(7),
-                OwnerId = ownerId
+                OwnerId = user.UserId
             };
         }
         #endregion
