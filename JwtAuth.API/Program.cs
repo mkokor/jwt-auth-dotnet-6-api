@@ -31,7 +31,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
     {
-        Description = "Enter JSON Web Token",
+        Description = "Enter Access Token",
         In = ParameterLocation.Header,
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
@@ -47,7 +47,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfiguration:Secret"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfiguration:AccessToken:Secret"])),
             ValidateIssuer = true,
             ValidIssuer = builder.Configuration["JwtConfiguration:Issuer"],
             ValidateAudience = false

@@ -4,8 +4,8 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
 {
     public interface ITokenGenerationService
     {
-        string GenerateJwt(User user);
+        string GenerateAccessToken(User user);
 
-        RefreshToken GenerateRefreshToken(int ownerId);
+        RefreshToken GenerateRefreshToken(User user);
     }
 }
