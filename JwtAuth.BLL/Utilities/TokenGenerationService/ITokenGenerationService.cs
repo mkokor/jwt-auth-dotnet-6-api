@@ -6,6 +6,6 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
     {
         string GenerateAccessToken(User user);
 
-        RefreshToken GenerateRefreshToken(User user);
+        string GenerateRefreshToken();
     }
 }

@@ -8,7 +8,7 @@ namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
 
         Task<RefreshToken?> GetRefreshTokenByOwnerId(int ownerId);
 
-        Task<RefreshToken?> GetRefreshTokenByValue(string value);
+        Task<List<RefreshToken>> GetAllRefreshTokens();
 
         void DeleteRefreshToken(RefreshToken refreshToken);
     }

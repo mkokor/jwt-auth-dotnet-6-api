@@ -86,23 +86,33 @@ namespace JwtAuth.BLL.Services.AuthenticationService
                 throw new Exception("Password does not match the username!");
         }
 
-        private async Task<RefreshToken> CreateRefreshToken(User user)
+        private async Task<Tuple<RefreshToken, string>> CreateRefreshToken(User user)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(user));
+            var refreshTokenValue = _tokenGenerationService.GenerateRefreshToken();
+            _cryptoService.Encrypt(refreshTokenValue, out byte[] valueHash, out byte[] valueSalt);
+            var refreshToken = new RefreshToken
+            {
+                ValueHash = valueHash,
+                ValueSalt = valueSalt,
+                CreatedAt = DateTime.Now,
+                ExpiresAt = DateTime.Now.AddDays(7),
+                OwnerId = user.UserId
+            };
+            refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(refreshToken);
             await _unitOfWork.SaveAsync();
-            return refreshToken;
+            return new Tuple<RefreshToken, string>(refreshToken, refreshTokenValue);
         }
 
-        private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
+        private void SetRefreshTokenInHttpOnlyCookie(Tuple<RefreshToken, string> refreshToken)
         {
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = refreshToken.ExpiresAt,
+                Expires = refreshToken.Item1.ExpiresAt,
                 SameSite = SameSiteMode.None,
                 Secure = true
             };
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions); // Adding refresh token in HttpOnly cookie...
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Item2, cookieOptions); // Adding refresh token in HttpOnly cookie...
         }
 
         private void RemoveRefreshTokenCookie()
@@ -110,13 +120,16 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             _httpContextAccessor.HttpContext.Response.Cookies.Delete("refreshToken");
         }
 
+        
         private async Task<RefreshToken?> GetRefreshTokenByValue(string value)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByValue(value);
-            if (refreshToken == null)
+            var refreshTokens = await _unitOfWork.RefreshTokenRepository.GetAllRefreshTokens();
+            var result = refreshTokens.Find(refreshToken => _cryptoService.Compare(value, refreshToken.ValueHash, refreshToken.ValueSalt));
+            if (result == null)
                 throw new AuthenticationException("Invalid refresh token!");
-            return refreshToken;
+            return result;
         }
+        
 
         private string GetRefreshTokenFromCookie()
         {
