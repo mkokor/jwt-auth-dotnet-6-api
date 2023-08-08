@@ -64,15 +64,9 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
         #endregion
 
         #region RefreshToken
-        public RefreshToken GenerateRefreshToken(User user)
+        public string GenerateRefreshToken()
         {
-            return new RefreshToken
-            {
-                Value = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-                CreatedAt = DateTime.Now,
-                ExpiresAt = DateTime.Now.AddDays(7),
-                OwnerId = user.UserId
-            };
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
         #endregion
     }

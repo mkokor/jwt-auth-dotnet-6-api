@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using JwtAuth.BLL.DTOs.Requests;
 using JwtAuth.BLL.DTOs.Responses;
+using JwtAuth.BLL.Utilities.CryptoService;
 using JwtAuth.BLL.Utilities.TokenGenerationService;
 using JwtAuth.DAL.Entities;
 using JwtAuth.DAL.Repositories.UnitOfWork;
@@ -20,23 +21,21 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         private readonly ITokenGenerationService _tokenGenerationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly ICryptoService _cryptoService;
 
-        public AuthenticationService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper, ITokenGenerationService tokenGenerationService, IHttpContextAccessor httpContextAccessor)
+        public AuthenticationService(IUnitOfWork unitOfWork, IMapper mapper, ITokenGenerationService tokenGenerationService, IHttpContextAccessor httpContextAccessor, ICryptoService cryptoService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _tokenGenerationService = tokenGenerationService;
             _httpContextAccessor = httpContextAccessor;
+            _cryptoService = cryptoService;
         }
 
         #region UserRegistration
         private void EncodePlaintextPassword(string plaintextPassword, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(plaintextPassword));
-            }
+            _cryptoService.Encrypt(plaintextPassword, out passwordHash, out passwordSalt);
         }
 
         private void ValidatePasswordStrength(string password)
@@ -82,32 +81,38 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         // Function below checks if provided plaintext password matches with provided hashed password (with specific salt)!
         private void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedPasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(plaintextPassword));
-                if (computedPasswordHash.SequenceEqual(passwordHash))
-                    return;
+            var passwordValid = _cryptoService.Compare(plaintextPassword, passwordHash, passwordSalt);
+            if (!passwordValid)
                 throw new Exception("Password does not match the username!");
-            }
         }
 
-        private async Task<RefreshToken> CreateRefreshToken(User user)
+        private async Task<Tuple<RefreshToken, string>> CreateRefreshToken(User user)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(_tokenGenerationService.GenerateRefreshToken(user));
+            var refreshTokenValue = _tokenGenerationService.GenerateRefreshToken();
+            _cryptoService.Encrypt(refreshTokenValue, out byte[] valueHash, out byte[] valueSalt);
+            var refreshToken = new RefreshToken
+            {
+                ValueHash = valueHash,
+                ValueSalt = valueSalt,
+                CreatedAt = DateTime.Now,
+                ExpiresAt = DateTime.Now.AddDays(7),
+                OwnerId = user.UserId
+            };
+            refreshToken = await _unitOfWork.RefreshTokenRepository.CreateRefreshToken(refreshToken);
             await _unitOfWork.SaveAsync();
-            return refreshToken;
+            return new Tuple<RefreshToken, string>(refreshToken, refreshTokenValue);
         }
 
-        private void SetRefreshTokenInHttpOnlyCookie(RefreshToken refreshToken)
+        private void SetRefreshTokenInHttpOnlyCookie(Tuple<RefreshToken, string> refreshToken)
         {
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = refreshToken.ExpiresAt,
+                Expires = refreshToken.Item1.ExpiresAt,
                 SameSite = SameSiteMode.None,
                 Secure = true
             };
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions); // Adding refresh token in HttpOnly cookie...
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Item2, cookieOptions); // Adding refresh token in HttpOnly cookie...
         }
 
         private void RemoveRefreshTokenCookie()
@@ -115,13 +120,16 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             _httpContextAccessor.HttpContext.Response.Cookies.Delete("refreshToken");
         }
 
+        
         private async Task<RefreshToken?> GetRefreshTokenByValue(string value)
         {
-            var refreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenByValue(value);
-            if (refreshToken == null)
+            var refreshTokens = await _unitOfWork.RefreshTokenRepository.GetAllRefreshTokens();
+            var result = refreshTokens.Find(refreshToken => _cryptoService.Compare(value, refreshToken.ValueHash, refreshToken.ValueSalt));
+            if (result == null)
                 throw new AuthenticationException("Invalid refresh token!");
-            return refreshToken;
+            return result;
         }
+        
 
         private string GetRefreshTokenFromCookie()
         {

@@ -5,7 +5,8 @@ namespace JwtAuth.DAL.Entities
     public class RefreshToken
     {
         public int RefreshTokenId { get; set; }
-        public string Value { get; set; } = string.Empty;
+        public byte[] ValueHash { get; set; }
+        public byte[] ValueSalt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ExpiresAt { get; set; }
 

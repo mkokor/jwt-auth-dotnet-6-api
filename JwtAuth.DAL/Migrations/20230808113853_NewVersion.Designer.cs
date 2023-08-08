@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JwtAuth.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230716182106_NewVersion")]
+    [Migration("20230808113853_NewVersion")]
     partial class NewVersion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,12 +40,19 @@ namespace JwtAuth.DAL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("owner_id");
 
-                    b.Property<string>("Value")
+                    b.Property<byte[]>("ValueHash")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("value");
+                        .HasColumnType("longblob")
+                        .HasColumnName("value_hash");
+
+                    b.Property<byte[]>("ValueSalt")
+                        .IsRequired()
+                        .HasColumnType("longblob")
+                        .HasColumnName("value_salt");
 
                     b.HasKey("RefreshTokenId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("refresh_tokens", (string)null);
                 });
@@ -93,11 +100,22 @@ namespace JwtAuth.DAL.Migrations
                             UserId = 1,
                             FirstName = "John",
                             LastName = "Doe",
-                            PasswordHash = new byte[] { 225, 249, 6, 99, 109, 102, 230, 15, 125, 169, 154, 117, 16, 100, 214, 79, 222, 59, 130, 25, 187, 102, 23, 17, 14, 242, 189, 105, 227, 227, 6, 129, 143, 46, 7, 13, 212, 224, 146, 103, 127, 16, 88, 111, 154, 27, 212, 14, 255, 208, 33, 72, 145, 252, 52, 194, 58, 100, 63, 186, 166, 35, 61, 18 },
-                            PasswordSalt = new byte[] { 4, 125, 39, 243, 171, 211, 5, 165, 165, 11, 77, 55, 155, 237, 82, 229, 136, 128, 124, 10, 208, 235, 109, 27, 26, 207, 85, 164, 250, 33, 77, 206, 46, 192, 14, 113, 64, 235, 100, 27, 108, 41, 95, 147, 165, 154, 70, 19, 249, 40, 16, 116, 100, 76, 1, 201, 66, 65, 137, 61, 233, 210, 190, 93, 225, 222, 193, 255, 110, 251, 46, 177, 185, 129, 18, 40, 148, 4, 223, 204, 14, 26, 215, 142, 179, 68, 119, 57, 89, 27, 141, 71, 106, 187, 19, 207, 88, 139, 155, 18, 65, 103, 249, 168, 173, 144, 118, 241, 47, 28, 170, 212, 149, 141, 99, 151, 170, 139, 129, 100, 147, 133, 192, 235, 108, 112, 87, 26 },
+                            PasswordHash = new byte[] { 113, 37, 9, 78, 97, 203, 134, 230, 56, 123, 217, 43, 43, 145, 21, 74, 88, 87, 181, 42, 242, 37, 125, 97, 221, 117, 126, 6, 198, 206, 127, 196, 162, 1, 218, 163, 187, 166, 111, 200, 176, 173, 131, 107, 148, 204, 29, 101, 181, 51, 202, 43, 135, 132, 28, 153, 204, 36, 251, 247, 30, 151, 29, 25 },
+                            PasswordSalt = new byte[] { 213, 106, 229, 84, 147, 34, 85, 3, 101, 208, 96, 40, 48, 169, 223, 21, 158, 100, 238, 47, 96, 171, 255, 82, 145, 186, 69, 76, 133, 79, 155, 49, 227, 57, 39, 225, 7, 31, 99, 58, 70, 194, 71, 164, 107, 250, 115, 174, 63, 179, 109, 17, 221, 154, 152, 117, 123, 69, 216, 55, 19, 109, 255, 100, 69, 88, 237, 169, 1, 243, 234, 6, 44, 134, 81, 172, 128, 22, 211, 88, 23, 118, 39, 254, 137, 219, 186, 22, 135, 0, 227, 205, 98, 115, 229, 54, 96, 213, 16, 154, 207, 50, 42, 208, 199, 98, 49, 143, 217, 198, 250, 164, 30, 161, 241, 177, 205, 144, 112, 135, 102, 223, 106, 43, 215, 241, 202, 2 },
                             Role = "Admin",
                             Username = "johndoe"
                         });
+                });
+
+            modelBuilder.Entity("JwtAuth.DAL.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("JwtAuth.DAL.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 #pragma warning restore 612, 618
         }

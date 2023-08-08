@@ -24,10 +24,10 @@ namespace JwtAuth.DAL.Repositories.RefreshTokenRepository
                                                     .FirstOrDefaultAsync(refreshToken => refreshToken.OwnerId == ownerId);
         }
 
-        public async Task<RefreshToken?> GetRefreshTokenByValue(string value)
+        public async Task<List<RefreshToken>> GetAllRefreshTokens()
         {
             return await _appDbContext.RefreshTokens.Include(refreshToken => refreshToken.Owner)
-                                                    .FirstOrDefaultAsync(refreshToken => refreshToken.Value == value);
+                                                    .ToListAsync();
         }
 
         public void DeleteRefreshToken(RefreshToken refreshToken)

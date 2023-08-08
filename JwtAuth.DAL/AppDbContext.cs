@@ -66,8 +66,12 @@ namespace JwtAuth.DAL
                 .HasColumnName("id");
 
             modelBuilder.Entity<RefreshToken>()
-                .Property(refreshToken => refreshToken.Value)
-                .HasColumnName("value");
+                .Property(refreshToken => refreshToken.ValueHash)
+                .HasColumnName("value_hash");
+
+            modelBuilder.Entity<RefreshToken>()
+                .Property(refreshToken => refreshToken.ValueSalt)
+                .HasColumnName("value_salt");
 
             modelBuilder.Entity<RefreshToken>()
                 .Property(refreshToken => refreshToken.CreatedAt)
