@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using JwtAuth.BLL.DTOs.Requests;
 using JwtAuth.BLL.DTOs.Responses;
+using JwtAuth.BLL.Utilities.CryptoService;
 using JwtAuth.BLL.Utilities.TokenGenerationService;
 using JwtAuth.DAL.Entities;
 using JwtAuth.DAL.Repositories.UnitOfWork;
@@ -20,23 +21,21 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         private readonly ITokenGenerationService _tokenGenerationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly ICryptoService _cryptoService;
 
-        public AuthenticationService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper, ITokenGenerationService tokenGenerationService, IHttpContextAccessor httpContextAccessor)
+        public AuthenticationService(IUnitOfWork unitOfWork, IMapper mapper, ITokenGenerationService tokenGenerationService, IHttpContextAccessor httpContextAccessor, ICryptoService cryptoService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _tokenGenerationService = tokenGenerationService;
             _httpContextAccessor = httpContextAccessor;
+            _cryptoService = cryptoService;
         }
 
         #region UserRegistration
         private void EncodePlaintextPassword(string plaintextPassword, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(plaintextPassword));
-            }
+            _cryptoService.Encrypt(plaintextPassword, out passwordHash, out passwordSalt);
         }
 
         private void ValidatePasswordStrength(string password)
@@ -82,13 +81,9 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         // Function below checks if provided plaintext password matches with provided hashed password (with specific salt)!
         private void ValidatePasswordHash(string plaintextPassword, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedPasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(plaintextPassword));
-                if (computedPasswordHash.SequenceEqual(passwordHash))
-                    return;
+            var passwordValid = _cryptoService.Compare(plaintextPassword, passwordHash, passwordSalt);
+            if (!passwordValid)
                 throw new Exception("Password does not match the username!");
-            }
         }
 
         private async Task<RefreshToken> CreateRefreshToken(User user)

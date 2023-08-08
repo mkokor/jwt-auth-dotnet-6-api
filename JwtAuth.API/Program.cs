@@ -1,5 +1,6 @@
 using JwtAuth.BLL.Services.AuthenticationService;
 using JwtAuth.BLL.Services.UsersService;
+using JwtAuth.BLL.Utilities.CryptoService;
 using JwtAuth.BLL.Utilities.TokenGenerationService;
 using JwtAuth.DAL;
 using JwtAuth.DAL.Repositories.UnitOfWork;
@@ -21,6 +22,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ITokenGenerationService, TokenGenerationService>();
+builder.Services.AddScoped<ICryptoService, CryptoService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
