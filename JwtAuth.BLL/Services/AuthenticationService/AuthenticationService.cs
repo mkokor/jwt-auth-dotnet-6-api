@@ -82,6 +82,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
             if (!passwordValid)
                 throw new Exception("Password does not match the username!");
         }
+
         private async Task<Tuple<RefreshToken, string>> CreateRefreshToken(User user)
         {
             var refreshTokenValue = _tokenGenerationService.GenerateRefreshToken();
