@@ -8,7 +8,7 @@ namespace JwtAuth.BLL.Utilities.CryptoService
 {
     public interface ICryptoService
     {
-        public void Encrypt(string value, out byte[] valueHash, out byte[] valueSalt);
+        public void Hash(string value, out byte[] valueHash, out byte[] valueSalt);
 
         public bool Compare(string value, byte[] valueHash, byte[] valueSalt);
     }

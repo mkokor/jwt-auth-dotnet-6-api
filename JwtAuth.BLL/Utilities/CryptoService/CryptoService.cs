@@ -5,7 +5,7 @@ namespace JwtAuth.BLL.Utilities.CryptoService
 {
     public class CryptoService : ICryptoService
     {
-        public void Encrypt(string value, out byte[] valueHash, out byte[] valueSalt)
+        public void Hash(string value, out byte[] valueHash, out byte[] valueSalt)
         {
             using (var hmac = new HMACSHA512())
             {

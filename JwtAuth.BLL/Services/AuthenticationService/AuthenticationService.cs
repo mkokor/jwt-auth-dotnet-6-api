@@ -32,7 +32,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         #region UserRegistration
         private void EncodePlaintextPassword(string plaintextPassword, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            _cryptoService.Encrypt(plaintextPassword, out passwordHash, out passwordSalt);
+            _cryptoService.Hash(plaintextPassword, out passwordHash, out passwordSalt);
         }
 
         private void ValidatePasswordStrength(string password)
@@ -86,7 +86,7 @@ namespace JwtAuth.BLL.Services.AuthenticationService
         private async Task<Tuple<RefreshToken, string>> CreateRefreshToken(User user)
         {
             var refreshTokenValue = _tokenGenerationService.GenerateRefreshToken();
-            _cryptoService.Encrypt(refreshTokenValue, out byte[] valueHash, out byte[] valueSalt);
+            _cryptoService.Hash(refreshTokenValue, out byte[] valueHash, out byte[] valueSalt);
             var refreshToken = new RefreshToken
             {
                 ValueHash = valueHash,
