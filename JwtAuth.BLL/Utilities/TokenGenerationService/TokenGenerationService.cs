@@ -38,7 +38,6 @@ namespace JwtAuth.BLL.Utilities.TokenGenerationService
                 signingCredentials: GetDigitalSignature(secret));
         }
 
-
         private string GenerateJwt(List<Claim> claims, string secret)
         {
             return new JwtSecurityTokenHandler().WriteToken(ConfigureJwt(claims, secret));
